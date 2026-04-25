@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>核武器级销讲话术库 (移动适配版)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    <style>
+        :root { 
+            --bg: #000000; 
+            --text-main: #00ff41; /* 极客绿 */
+            --border: #008f11; 
+            --card-bg: rgba(0, 20, 0, 0.9);
+            --accent-red: #ff3333; /* 禁忌色 */
+            --accent-gold: #ffd700; /* 话术高亮色 */
+        }
+        
+        body { 
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 12px; /* 移动端减小内边距 */
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .header { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            max-width: 800px; 
+            margin: 0 auto 20px auto; 
+        }
+        
+        h2 { 
+            margin: 5px 0; 
+            text-align: center; 
+            text-shadow: 0 0 10px rgba(0,255,65,0.5); 
+            font-size: 22px;
+        }
+        
+        input[type="text"] { 
+            padding: 14px; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            font-size: 15px; 
+            width: 100%; 
+            box-sizing: border-box; 
+            transition: 0.3s; 
+        }
+        
+        input[type="text"]:focus { 
+            outline: none; 
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.4); 
+        }
+        
+        .import-btn { 
+            background: var(--card-bg); 
+            border: 1px dashed var(--text-main); 
+            color: var(--text-main); 
+            padding: 12px; 
+            cursor: pointer; 
+            text-align: center; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 14px;
+        }
+        
+        /* 响应式网格布局 */
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1fr; /* 手机端默认单列铺满 */
+            gap: 16px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        
+        @media (min-width: 650px) {
+            .grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+        }
+        
+        /* 卡片整体设计 */
+        .card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 10px; 
+            padding: 16px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+            box-shadow: 0 4px 15px rgba(0, 255, 65, 0.05); 
+            overflow: hidden; /* 防止内容撑破卡片 */
+        }
+        
+        /* 卡片头部：改为上下布局，彻底解决挤压问题 */
+        .card-header { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 10px; 
+            border-bottom: 1px dashed var(--border); 
+            padding-bottom: 12px; 
+        }
+        
+        .card-title { 
+            font-size: 20px; 
+            font-weight: bold; 
+            color: #fff; 
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+        
+        .badge { 
+            background: var(--border); 
+            color: #000; 
+            padding: 5px 10px; 
+            border-radius: 6px; 
+            font-size: 13px; 
+            font-weight: bold; 
+            /* 允许长文本换行 */
+            white-space: normal; 
+            word-break: break-all;
+            line-height: 1.4;
+        }
+        
+        /* 核心模块排版 */
+        .section-title { 
+            font-size: 13px; 
+            color: #666; 
+            margin-bottom: 6px; 
+            font-weight: bold; 
+        }
+        
+        .desc { 
+            font-size: 14px; 
+            color: #ccc; 
+            line-height: 1.6; 
+            word-wrap: break-word;
+        }
+        
+        /* 实战话术框 */
+        .demo-box { 
+            background: rgba(255, 215, 0, 0.05); 
+            border-left: 4px solid var(--accent-gold); 
+            padding: 12px; 
+            border-radius: 0 6px 6px 0; 
+            font-size: 15px; 
+            color: var(--accent-gold); 
+            line-height: 1.6; 
+            /* 保证回车换行生效，且长单词自动换行 */
+            white-space: pre-wrap; 
+            word-break: break-word;
+            margin: 0; 
+        }
+        
+        /* 禁忌框 */
+        .tips-box { 
+            background: rgba(255, 51, 51, 0.05); 
+            border: 1px solid rgba(255, 51, 51, 0.3); 
+            padding: 12px; 
+            border-radius: 6px; 
+            font-size: 13px; 
+            color: var(--accent-red); 
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .tips-label {
+            font-weight: bold; 
+            display: block; 
+            margin-bottom: 4px;
+        }
+        
+        /* 操作按钮 */
+        .actions { 
+            display: flex; 
+            margin-top: auto; 
+            padding-top: 5px; 
+        }
+        
+        button { 
+            flex: 1; 
+            background: transparent; 
+            border: 1px solid var(--border); 
+            color: var(--text-main); 
+            padding: 12px; 
+            cursor: pointer; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            font-size: 15px;
+            transition: all 0.2s; 
+        }
+        
+        button:hover, button:active { 
+            background: var(--text-main); 
+            color: #000; 
+        }
+        
+        #status { 
+            text-align: center; 
+            font-size: 13px; 
+            opacity: 0.8; 
+            margin-bottom: 10px; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2>🎙️ 销讲核武器库</h2>
+    <div id="status">正在检查本地潜意识数据库...</div>
+    
+    <label class="import-btn" id="uploadLabel">
+        📂 点击导入 JSONL 数据包以注入灵魂
+        <input type="file" id="fileInput" accept=".jsonl" style="display: none;">
+    </label>
+    
+    <input type="text" id="searchInput" placeholder="搜索痛点、话术或场景 (例：开场, 价格贵, 逼单)...">
+</div>
+
+<div class="grid" id="resultsGrid"></div>
+
+<script>
+let allCards = [];
+
+async function initDB() {
+    const status = document.getElementById('status');
+    const storedData = await localforage.getItem('sales_tactics_db');
+    
+    if (storedData && storedData.length > 0) {
+        allCards = storedData;
+        document.getElementById('uploadLabel').style.display = 'none';
+        status.innerHTML = `✅ 已就绪：成功持久化 <b style="color:var(--accent-gold)">${allCards.length}</b> 个顶级杀招`;
+        renderCards(allCards.slice(0, 50)); 
+    } else {
+        status.innerText = `⚠️ 弹药库为空，请导入 Termux 生成的 JSONL 文件`;
+    }
+}
+
+document.getElementById('fileInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    document.getElementById('status').innerText = '⏳ 正在疯狂解析并注入核心数据库...';
+    const reader = new FileReader();
+    
+    reader.onload = async (event) => {
+        const text = event.target.result;
+        const lines = text.split('\n').filter(line => line.trim());
+        
+        const parsedData = [];
+        lines.forEach(line => {
+            try { parsedData.push(JSON.parse(line)); } catch(err) {}
+        });
+        
+        await localforage.setItem('sales_tactics_db', parsedData);
+        allCards = parsedData;
+        document.getElementById('uploadLabel').style.display = 'none';
+        document.getElementById('status').innerHTML = `✅ 成功持久化 <b style="color:var(--accent-gold)">${allCards.length}</b> 个杀招！`;
+        renderCards(allCards.slice(0, 50));
+    };
+    
+    reader.readAsText(file);
+});
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    const keyword = e.target.value.toLowerCase().trim();
+    if (!keyword) {
+        renderCards(allCards.slice(0, 50));
+        return;
+    }
+    
+    const results = allCards.filter(card => 
+        (card.t && card.t.toLowerCase().includes(keyword)) || 
+        (card.c && card.c.toLowerCase().includes(keyword)) ||
+        (card.desc && card.desc.toLowerCase().includes(keyword)) ||
+        (card.demo && card.demo.toLowerCase().includes(keyword))
+    );
+    
+    renderCards(results.slice(0, 100)); 
+});
+
+function renderCards(dataArray) {
+    const grid = document.getElementById('resultsGrid');
+    grid.innerHTML = '';
+    
+    dataArray.forEach(card => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+            <div class="card-header">
+                <div class="card-title">${card.t || '未知套路'}</div>
+                <div class="badge">${card.c || '通用技巧'}</div>
+            </div>
+            
+            <div>
+                <div class="section-title">🧠 心理学底层逻辑</div>
+                <div class="desc">${card.desc || '暂无说明'}</div>
+            </div>
+            
+            <div>
+                <div class="section-title">🎙️ 实战暴击话术</div>
+                <div class="demo-box">${card.demo || '暂无话术'}</div>
+            </div>
+            
+            <div class="tips-box">
+                <div>
+                    <span class="tips-label">⚠️ 致命禁忌:</span>
+                    <span>${card.tips || '无明显禁忌'}</span>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button onclick="copyText(this)">📄 一键复制话术</button>
+            </div>
+        `;
+        grid.appendChild(div);
+    });
+}
+
+function copyText(btn) {
+    const card = btn.closest('.card');
+    const textToCopy = card.querySelector('.demo-box').innerText;
+    
+    // 创建一个临时文本框来执行复制操作 (更兼容移动端)
+    const textarea = document.createElement('textarea');
+    textarea.value = textToCopy;
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        document.execCommand('copy');
+        const originalText = btn.innerText;
+        btn.innerText = "✅ 复制成功！";
+        btn.style.background = "var(--text-main)";
+        btn.style.color = "#000";
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.background = "transparent";
+            btn.style.color = "var(--text-main)";
+        }, 1500);
+    } catch (err) {
+        alert("复制失败，请手动选取文字复制");
+    } finally {
+        document.body.removeChild(textarea);
+    }
+}
+
+window.onload = initDB;
+</script>
+</body>
+</html>
